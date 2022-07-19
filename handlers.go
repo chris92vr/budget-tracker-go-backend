@@ -711,3 +711,98 @@ func getExpensesById(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
+	var budget models.Budget
+
+	var budgetId string
+
+	budgetId = r.URL.Query().Get("budget_id")
+
+	err := json.NewDecoder(r.Body).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = validate.Struct(budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = budgetCollection.FindOneAndDelete(context.TODO(), bson.M{"budget_id": budgetId}).Decode(&budget)
+	_, err = expenseCollection.DeleteMany(context.TODO(), bson.M{"budget_id": budgetId})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Println("budget deleted")
+}
+
+func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
+	var expense models.Expense
+
+	var expenseId string
+
+	expenseId = r.URL.Query().Get("expense_id")
+
+	err := json.NewDecoder(r.Body).Decode(&expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = validate.Struct(expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = expenseCollection.FindOneAndDelete(context.TODO(), bson.M{"expense_id": expenseId}).Decode(&expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Println("expense deleted")
+}
+
+func totalMaxAndTotalAmountByUserId(w http.ResponseWriter, r *http.Request) {
+	var totalMax float64
+	var totalAmount float64
+	var userId string
+
+	userId = getUserId(w, r)
+
+	cur, err := budgetCollection.Find(context.TODO(), bson.M{"user_id": userId})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		for cur.Next(context.TODO()) {
+			var budget models.Budget
+			err := cur.Decode(&budget)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			totalMax += budget.Max
+			totalAmount += budget.TotalAmount
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]float64{"total_max": totalMax, "total_amount": totalAmount})
+	fmt.Println("total max and total amount retrieved")
+}

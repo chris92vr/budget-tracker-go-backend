@@ -21,11 +21,11 @@ func main() {
 	http.HandleFunc("/profile", MyProfile)
 	http.HandleFunc("/addbudget", addBudget)
 	http.HandleFunc("/addexpense", addExpense)
-	http.HandleFunc("/deleteexpense", deleteExpense)
-	http.HandleFunc("/deletebudget", deleteBudget)
 	http.HandleFunc("/getbudgets", getAllBudget)
 	http.HandleFunc("/getexpenses", getExpensesById)
-
+	http.HandleFunc("/deleteexpense", deleteExpenseById)
+	http.HandleFunc("/deletebudget", deleteBudgetById)
+	http.HandleFunc("/totalBudget", totalMaxAndTotalAmountByUserId)
 	// start the server on port 8080
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
