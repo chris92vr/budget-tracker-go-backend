@@ -8,9 +8,10 @@ import (
 
 type Expense struct {
 	ID          primitive.ObjectID `bson:"_id"`
-	Description string             `bson:"description"`
-	Amount      float64            `bson:"amount"`
+	Description string             `json:"description"`
+	Amount      float64            `json:"amount,string"`
 	Created_at  time.Time          `json:"created_at"`
 	Updated_at  time.Time          `json:"updated_at"`
 	Budget_id   string             `json:"budget_id"`
+	Expense_id  string             `json:"expense_id"`
 }

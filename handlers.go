@@ -34,6 +34,10 @@ type session struct {
 	user_id  string
 }
 
+type Expense struct {
+	Budget_id string `json:"budget_id"`
+}
+
 // we'll use this method later to determine if the session has expired
 func (s session) isExpired() bool {
 	return s.expiry.Before(time.Now())
@@ -309,8 +313,6 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 		return ""
 	}
 
-	json.NewEncoder(w).Encode(user.User_id)
-
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -320,8 +322,6 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 	}
 
 	w.WriteHeader(http.StatusOK)
-
-	json.NewEncoder(w).Encode(map[string]string{"userID": user.User_id})
 
 	fmt.Println("user id retrieved")
 
@@ -357,6 +357,7 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 	budget.ID = primitive.NewObjectID()
 	budget.Created_at = time.Now()
 	budget.Updated_at = time.Now()
+	budget.Budget_id = budget.ID.Hex()
 
 	_, err = budgetCollection.InsertOne(context.TODO(), budget)
 	if err != nil {
@@ -369,67 +370,6 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
 
 	fmt.Println("budget created")
-
-}
-
-func getBudgetId(w http.ResponseWriter, r *http.Request) string {
-	var budget models.Budget
-
-	var expense models.Expense
-
-	err := json.NewDecoder(r.Body).Decode(&budget)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return ""
-	} else {
-		fmt.Println("budget retrieved")
-	}
-
-	var userId string
-	userId = getUserId(w, r)
-	if userId == "" {
-		return "" // userId is empty
-	} else {
-		budget.User_id = userId
-	}
-
-	err = validate.Struct(budget)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return ""
-	}
-
-	var budgetId string
-	err = budgetCollection.FindOne(context.TODO(), bson.M{"user_id": userId, "name": budget.Name}).Decode(&budget)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return ""
-	} else {
-		fmt.Println("budget retrieved")
-	}
-
-	budgetId = budget.ID.Hex()
-
-	err = expenseCollection.FindOne(context.TODO(), bson.M{"budget_id": budgetId}).Decode(&expense)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return ""
-	} else {
-		fmt.Println("budget retrieved")
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
-
-	fmt.Println("budget retrieved")
-	budgetId = budget.ID.Hex()
-	return budgetId
-
-	// var budget models.Budget
 
 }
 
@@ -449,12 +389,28 @@ func addExpense(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	expense.Budget_id = getBudgetId(w, r)
+
 	expense.ID = primitive.NewObjectID()
 	expense.Created_at = time.Now()
 	expense.Updated_at = time.Now()
+	expense.Expense_id = expense.ID.Hex()
 
 	_, err = expenseCollection.InsertOne(context.TODO(), expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	//update total amount of budget
+	var budget models.Budget
+	err = budgetCollection.FindOne(context.TODO(), bson.M{"budget_id": expense.Budget_id}).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	budget.TotalAmount = budget.TotalAmount + expense.Amount
+	_, err = budgetCollection.UpdateOne(context.TODO(), bson.M{"budget_id": expense.Budget_id}, bson.M{"$set": bson.M{"totalAmount": budget.TotalAmount}})
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -465,5 +421,293 @@ func addExpense(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"expenseID": expense.ID.Hex()})
 
 	fmt.Println("expense created")
+
+}
+
+func deleteBudget(w http.ResponseWriter, r *http.Request) {
+	var budget models.Budget
+
+	err := json.NewDecoder(r.Body).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = validate.Struct(budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err = budgetCollection.DeleteOne(context.TODO(), bson.M{"budget_id": budget.Budget_id})
+
+	_, err = expenseCollection.DeleteMany(context.TODO(), bson.M{"budget_id": budget.Budget_id})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
+
+	fmt.Println("budget deleted")
+
+}
+
+func deleteExpense(w http.ResponseWriter, r *http.Request) {
+
+	var expense models.Expense
+
+	err := json.NewDecoder(r.Body).Decode(&expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = validate.Struct(expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err = expenseCollection.DeleteOne(context.TODO(), bson.M{"expense_id": expense.Expense_id})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"expenseID": expense.ID.Hex()})
+
+	fmt.Println("expense deleted")
+
+}
+
+func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	token := r.Header.Get("Authorization")
+	if token == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		return false
+	}
+	token = strings.TrimPrefix(token, "Bearer ")
+	if _, ok := sessions[token]; !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		return false
+	}
+	return true
+}
+
+func getBudgetsByUserId(w http.ResponseWriter, r *http.Request) {
+	var budgets []models.Budget
+	var userId string
+
+	userId = getUserId(w, r)
+	if userId == "" {
+		return // userId is empty
+	} else {
+		budgets = getBudgets(userId)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(budgets)
+
+	fmt.Println("budgets retrieved")
+
+	return
+}
+
+func getBudgets(userId string) []models.Budget {
+	var budgets []models.Budget
+
+	cur, err := budgetCollection.Find(context.TODO(), bson.M{"user_id": userId})
+	if err != nil {
+		fmt.Println(err)
+		return budgets
+	}
+
+	for cur.Next(context.TODO()) {
+		var budget models.Budget
+		err := cur.Decode(&budget)
+		if err != nil {
+			fmt.Println(err)
+			return budgets
+		}
+		budgets = append(budgets, budget)
+	}
+
+	return budgets
+}
+func getBudget(budgetId string) models.Budget {
+	var budget models.Budget
+
+	err := budgetCollection.FindOne(context.TODO(), bson.M{"budget_id": budgetId}).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		return budget
+	}
+
+	return budget
+}
+
+func getAllBudget(w http.ResponseWriter, r *http.Request) {
+	var budgets []models.Budget
+
+	cur, err := budgetCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for cur.Next(context.TODO()) {
+		var budget models.Budget
+		err := cur.Decode(&budget)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if budget.User_id == getUserId(w, r) {
+			budgets = append(budgets, budget)
+		} else {
+			fmt.Println("user not authorized")
+		}
+
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(budgets)
+
+	fmt.Println("budgets retrieved")
+
+}
+
+func getAllExpensesByBudget(w http.ResponseWriter, r *http.Request) {
+	var expense Expense
+	var espenses []models.Expense
+
+	err := json.NewDecoder(r.Body).Decode(&expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = validate.Struct(expense)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	cur, err := expenseCollection.Find(context.TODO(), bson.M{"budget_id": expense.Budget_id})
+	fmt.Println("expense:" + expense.Budget_id)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		for cur.Next(context.TODO()) {
+			var expense models.Expense
+			err := cur.Decode(&expense)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			espenses = append(espenses, expense)
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(espenses)
+
+	fmt.Println("expenses retrieved")
+
+	return
+}
+
+func getExpenses(w http.ResponseWriter, r *http.Request, budgetId string) {
+	var expenses []models.Expense
+
+	cur, err := expenseCollection.Find(context.TODO(), bson.M{"budget_id": budgetId})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	for cur.Next(context.TODO()) {
+		var expense models.Expense
+		err := cur.Decode(&expense)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		expenses = append(expenses, expense)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expenses)
+
+	fmt.Println("expenses retrieved")
+
+}
+
+func getExpenseById(w http.ResponseWriter, r *http.Request) {
+	var expense models.Expense
+	var expenseId string
+
+	expenseId = r.URL.Query().Get("budget_id")
+
+	if expenseId == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		err := expenseCollection.FindOne(context.TODO(), bson.M{"budget_id": expenseId}).Decode(&expense)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		} else {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(expense)
+		}
+	}
+	fmt.Println("expense retrieved")
+}
+
+func getExpensesById(w http.ResponseWriter, r *http.Request) {
+	var expenses []models.Expense
+	var budget_id string
+
+	budget_id = r.URL.Query().Get("budget_id")
+
+	cur, err := expenseCollection.Find(context.TODO(), bson.M{"budget_id": budget_id})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		for cur.Next(context.TODO()) {
+			var expense models.Expense
+			err := cur.Decode(&expense)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			expenses = append(expenses, expense)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(expenses)
+
+		fmt.Println("expenses retrieved")
+
+	}
 
 }
