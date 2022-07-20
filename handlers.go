@@ -765,6 +765,9 @@ func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	//update budget total amount
+
+	//delete expense
 
 	err = expenseCollection.FindOneAndDelete(context.TODO(), bson.M{"expense_id": expenseId}).Decode(&expense)
 	if err != nil {
@@ -775,6 +778,20 @@ func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Println("expense deleted")
+	var budget models.Budget
+	err = budgetCollection.FindOne(context.TODO(), bson.M{"budget_id": expense.Budget_id}).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	budget.TotalAmount -= expense.Amount
+	err = budgetCollection.FindOneAndReplace(context.TODO(), bson.M{"budget_id": expense.Budget_id}, budget).Decode(&budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func totalMaxAndTotalAmountByUserId(w http.ResponseWriter, r *http.Request) {
