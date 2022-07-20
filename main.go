@@ -13,6 +13,8 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
+	log.Printf("Listening on port %s", port)
+	log.Printf("Database_URL  %s", os.Getenv("MONGODB_URL"))
 
 	http.HandleFunc("/signin", Login)
 	http.HandleFunc("/signup", Signup)
