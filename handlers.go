@@ -91,7 +91,7 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -152,7 +152,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 func Signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -220,7 +220,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 func MyProfile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -266,7 +266,7 @@ func MyProfile(w http.ResponseWriter, r *http.Request) {
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -356,7 +356,7 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 
 func addBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -406,7 +406,7 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 
 func addExpense(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -463,7 +463,7 @@ func addExpense(w http.ResponseWriter, r *http.Request) {
 
 func deleteBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -502,7 +502,7 @@ func deleteBudget(w http.ResponseWriter, r *http.Request) {
 
 func deleteExpense(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -554,7 +554,7 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 
 func getBudgetsByUserId(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -612,7 +612,7 @@ func getBudget(budgetId string) models.Budget {
 
 func getAllBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -649,7 +649,7 @@ func getAllBudget(w http.ResponseWriter, r *http.Request) {
 
 func getAllExpensesByBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -727,7 +727,7 @@ func getExpenses(w http.ResponseWriter, r *http.Request, budgetId string) {
 
 func getExpenseById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -756,7 +756,7 @@ func getExpenseById(w http.ResponseWriter, r *http.Request) {
 
 func getExpensesById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -793,7 +793,7 @@ func getExpensesById(w http.ResponseWriter, r *http.Request) {
 
 func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -832,7 +832,7 @@ func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
 
 func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -887,7 +887,7 @@ func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
 
 func totalMaxAndTotalAmountByUserId(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://remarkable-frangipane-c21241.netlify.app")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spontaneous-biscotti-5c42d7.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
