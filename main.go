@@ -8,6 +8,13 @@ import (
 
 func main() {
 
+
+
+
+
+
+
+
 	port := os.Getenv("PORT")
 
 	if port == "" {
@@ -30,6 +37,9 @@ func main() {
 	http.HandleFunc("/totalBudget", totalMaxAndTotalAmountByUserId)
 	// start the server on port 8080
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	//http.ListenAndServe(":"+port, handler)
+	
 }
 
 //{"name": "user7" , "amount" :7, "max": 300}
