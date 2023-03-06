@@ -312,6 +312,7 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 		if err == http.ErrNoCookie {
 			// If the cookie is not set, return an unauthorized status
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("the cookie set in the session is", r.Cookies())
 			return ""
 		}
 		// For any other type of error, return a bad request status
