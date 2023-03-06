@@ -88,12 +88,20 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 
 	return true
 }
+func setupResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
+	(*w).Header().Set("Access-Control-Expose-Headers", "Content-Length")
+	(*w).Header().Set("Content-Type", "application/json")
+	
+
+	
+}
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	
-	
-	
-
+	setupResponse(&w, r)
 	var credentials Credentials
 	err := json.NewDecoder(r.Body).Decode(&credentials)
 	if err != nil {
@@ -122,7 +130,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	
 
+	// create a new session token for the user
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(time.Minute * 30)
 	sessions[sessionToken] = session{username: credentials.Username, expiry: expiresAt, user_id: credentials.User_id}
@@ -139,19 +149,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Value:   sessionToken,
 		Expires: expiresAt,
 	})
-
 	
-	
-
 	// we'll use this later to determine if the session has expired
 	// func (s session) isExpired() bool {
 	// 	return s.expiry.Before(time.Now())
 	// }
+	// return sessionToken, expiresAt, nil
+
+	// return status http response
+	// w.WriteHeader(http.StatusOK)
+
 
 }
 
 func Signup(w http.ResponseWriter, r *http.Request) {
-
+	setupResponse(&w, r)
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
