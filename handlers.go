@@ -148,6 +148,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Expires: expiresAt,
 	})
 	// return the session token to the user
+	json.NewEncoder(w).Encode(sessionToken)
 
 
 
