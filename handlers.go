@@ -109,7 +109,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 	err = validate.Struct(credentials)
 	if err != nil {
 		fmt.Println(err)
@@ -129,8 +128,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("wrong password")
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	}
-	
+	}	
 
 	// create a new session token for the user
 	sessionToken := uuid.NewString()
