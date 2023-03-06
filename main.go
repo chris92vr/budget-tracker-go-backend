@@ -33,7 +33,3 @@ func main() {
 	
 }
 
-//{"name": "user7" , "amount" :7, "max": 300}
-//{"username": "user7" , "password" :"password7"}
-//{"description": "user17" , "amount" :7}
-//{"description": "user17" , "amount" :7, "budget_id": "62d397cebe1d05853cb71ad9"}
