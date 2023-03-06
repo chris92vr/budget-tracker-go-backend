@@ -7,14 +7,6 @@ import (
 )
 
 func main() {
-
-
-
-
-
-
-
-
 	port := os.Getenv("PORT")
 
 	if port == "" {
@@ -22,10 +14,9 @@ func main() {
 	}
 	log.Printf("Listening on port %s", port)
 	log.Printf("Database_URL  %s", os.Getenv("MONGODB_URL"))
-
+	
 	http.HandleFunc("/signin", Login)
 	http.HandleFunc("/signup", Signup)
-
 	http.HandleFunc("/logout", Logout)
 	http.HandleFunc("/profile", MyProfile)
 	http.HandleFunc("/addbudget", addBudget)
