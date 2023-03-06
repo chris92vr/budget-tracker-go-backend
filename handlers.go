@@ -147,8 +147,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Value:   sessionToken,
 		Expires: expiresAt,
 	})
+	// return the session token to the user
+	json.NewEncoder(w).Encode(sessionToken)
 	
-	// we'll use this later to determine if the session has expired
+
+
+	// I will use this later to determine if the session has expired
 	// func (s session) isExpired() bool {
 	// 	return s.expiry.Before(time.Now())
 	// }
