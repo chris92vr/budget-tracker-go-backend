@@ -802,7 +802,7 @@ func getUserIdByCookie(w http.ResponseWriter, r *http.Request) {
 	
 		fmt.Println("user id retrieved")
 	
-		json.NewEncoder(w).Encode(user)
+		json.NewEncoder(w).Encode(user.User_id)
 
 	}
 
