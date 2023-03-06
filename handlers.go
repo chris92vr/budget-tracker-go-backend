@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -754,6 +755,59 @@ func getExpensesById(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func getUserIdByCookie(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	var cookie string
+	cookie = r.URL.Query().Get("cookie")
+
+	err := validate.Struct(cookie)
+
+	if cookie == "" {
+		err := errors.New("cookie not found")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		userSession, exists := sessions[cookie]
+		if !exists {
+			// If the session token is not present in session map, return an unauthorized error
+			w.WriteHeader(http.StatusUnauthorized)
+			
+		}
+		if userSession.isExpired() {
+			delete(sessions, cookie)
+			w.WriteHeader(http.StatusUnauthorized)
+		
+		}
+		w.WriteHeader(http.StatusOK)
+	
+		var user models.User
+		err = userCollection.FindOne(context.TODO(), bson.M{"username": userSession.username}).Decode(&user)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			
+		}
+	
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			
+		} else {
+			fmt.Println("user id retrieved")
+		}
+	
+		w.WriteHeader(http.StatusOK)
+	
+		fmt.Println("user id retrieved")
+	
+		json.NewEncoder(w).Encode(user)
+
+	}
+
+}
+
 
 func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
 	

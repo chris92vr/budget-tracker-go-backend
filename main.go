@@ -25,6 +25,7 @@ func main() {
 	http.HandleFunc("/getexpenses", getExpensesById)
 	http.HandleFunc("/deleteexpense", deleteExpenseById)
 	http.HandleFunc("/deletebudget", deleteBudgetById)
+	http.HandleFunc("/getUserId", getUserIdByCookie)
 	http.HandleFunc("/totalBudget", totalMaxAndTotalAmountByUserId)
 	// start the server on port 8080
 	log.Fatal(http.ListenAndServe(":"+port, nil))
