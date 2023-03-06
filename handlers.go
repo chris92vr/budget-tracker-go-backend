@@ -148,8 +148,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Expires: expiresAt,
 	})
 	// return the session token to the user
-	json.NewEncoder(w).Encode(sessionToken)
-	
+
+
+
+
 
 
 	// I will use this later to determine if the session has expired
@@ -228,7 +230,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func MyProfile(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	// We can obtain the session token from the requests cookies, which come with every request
 	c, err := r.Cookie("session_token")
 	if err != nil {
@@ -270,7 +272,7 @@ func MyProfile(w http.ResponseWriter, r *http.Request) {
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	
-
+	setupResponse(&w, r)
 	c, err := r.Cookie("session_token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -303,6 +305,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 func getUserId(w http.ResponseWriter, r *http.Request) string {
 	// We can obtain the session token from the requests cookies, which come with every request
+	setupResponse(&w, r)
 	c, err := r.Cookie("session_token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -355,7 +358,7 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 }
 
 func addBudget(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var budget models.Budget
 	var userId string
 
@@ -401,7 +404,7 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 
 func addExpense(w http.ResponseWriter, r *http.Request) {
 	
-	
+	setupResponse(&w, r)
 	var expense models.Expense
 
 	err := json.NewDecoder(r.Body).Decode(&expense)
@@ -453,7 +456,7 @@ func addExpense(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBudget(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var budget models.Budget
 
 	err := json.NewDecoder(r.Body).Decode(&budget)
@@ -488,7 +491,7 @@ func deleteBudget(w http.ResponseWriter, r *http.Request) {
 
 func deleteExpense(w http.ResponseWriter, r *http.Request) {
 	
-
+	setupResponse(&w, r)
 	var expense models.Expense
 
 	err := json.NewDecoder(r.Body).Decode(&expense)
@@ -520,6 +523,7 @@ func deleteExpense(w http.ResponseWriter, r *http.Request) {
 }
 
 func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	setupResponse(&w, r)
 	token := r.Header.Get("Authorization")
 	if token == "" {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -534,7 +538,7 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func getBudgetsByUserId(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var budgets []models.Budget
 	var userId string
 
@@ -554,6 +558,7 @@ func getBudgetsByUserId(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBudgets(userId string) []models.Budget {
+	
 	var budgets []models.Budget
 
 	cur, err := budgetCollection.Find(context.TODO(), bson.M{"user_id": userId})
@@ -587,7 +592,7 @@ func getBudget(budgetId string) models.Budget {
 }
 
 func getAllBudget(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var budgets []models.Budget
 
 	cur, err := budgetCollection.Find(context.TODO(), bson.M{})
@@ -619,7 +624,7 @@ func getAllBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllExpensesByBudget(w http.ResponseWriter, r *http.Request) {
-
+	setupResponse(&w, r)
 	var expense Expense
 	var espenses []models.Expense
 
@@ -665,6 +670,7 @@ func getAllExpensesByBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func getExpenses(w http.ResponseWriter, r *http.Request, budgetId string) {
+	setupResponse(&w, r)
 	var expenses []models.Expense
 
 	cur, err := expenseCollection.Find(context.TODO(), bson.M{"budget_id": budgetId})
@@ -692,7 +698,7 @@ func getExpenses(w http.ResponseWriter, r *http.Request, budgetId string) {
 }
 
 func getExpenseById(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var expense models.Expense
 	var expenseId string
 
@@ -716,6 +722,7 @@ func getExpenseById(w http.ResponseWriter, r *http.Request) {
 }
 
 func getExpensesById(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
 	var expenses []models.Expense
 	var budget_id string
 
@@ -748,6 +755,7 @@ func getExpensesById(w http.ResponseWriter, r *http.Request) {
 
 func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
 	
+	setupResponse(&w, r)
 	var budget models.Budget
 
 	var budgetId string
@@ -781,7 +789,7 @@ func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var expense models.Expense
 
 	var expenseId string
@@ -831,7 +839,7 @@ func deleteExpenseById(w http.ResponseWriter, r *http.Request) {
 }
 
 func totalMaxAndTotalAmountByUserId(w http.ResponseWriter, r *http.Request) {
-	
+	setupResponse(&w, r)
 	var totalMax float64
 	var totalAmount float64
 	var userId string
