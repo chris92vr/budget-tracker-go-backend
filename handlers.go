@@ -756,8 +756,11 @@ func getExpensesById(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getUserIdByCookie(w http.ResponseWriter, r *http.Request) {
+func getBudgetsByCookie(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
+	var budgets []models.Budget
+
+
 	var cookie string
 	cookie = r.URL.Query().Get("cookie")
 
@@ -780,7 +783,7 @@ func getUserIdByCookie(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 		
 		}
-		w.WriteHeader(http.StatusOK)
+		
 	
 		var user models.User
 		err = userCollection.FindOne(context.TODO(), bson.M{"username": userSession.username}).Decode(&user)
@@ -797,16 +800,30 @@ func getUserIdByCookie(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Println("user id retrieved")
 		}
-	
-		w.WriteHeader(http.StatusOK)
-	
-		fmt.Println("user id retrieved")
-	
-		json.NewEncoder(w).Encode(user.User_id)
 
+	
+		cur, err := budgetCollection.Find(context.TODO(), bson.M{"user_id": user.User_id})
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		for cur.Next(context.TODO()) {
+			var budget models.Budget
+			err := cur.Decode(&budget)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			budgets = append(budgets, budget)
+		}
+
+		json.NewEncoder(w).Encode(budgets)	
+		w.WriteHeader(http.StatusOK)	
 	}
-
 }
+
 
 
 func deleteBudgetById(w http.ResponseWriter, r *http.Request) {
