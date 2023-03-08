@@ -90,16 +90,14 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	return true
 }
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
     (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
     (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(*w).Header().Set("Access-Control-Expose-Headers", "Content-Length")
 	(*w).Header().Set("Content-Type", "application/json")
-	
-
-	
 }
+
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
@@ -142,6 +140,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Expires: expiresAt,
 	})
 	w.WriteHeader(http.StatusOK)
+	// write header set-cookie
+	w.Header().Set("Set-Cookie", sessionToken)
 	fmt.Println("user logged in")
 	fmt.Println(&http.Cookie{
 		Name:    "session_token",
@@ -362,6 +362,7 @@ func getUserId(w http.ResponseWriter, r *http.Request) string {
 
 func addBudget(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
+	c, _ := r.Cookie("session_token")
 	var budget models.Budget
 	var userId string
 
@@ -371,7 +372,7 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 	} else {
 		budget.User_id = userId
 	}
-
+	sessionToken := c.Value
 	err := json.NewDecoder(r.Body).Decode(&budget)
 	if err != nil {
 		fmt.Println(err)
@@ -397,13 +398,66 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	w.Header().Set("Set-Cookie", sessionToken)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
 
 	fmt.Println("budget created")
 
 }
+
+func addBudgetByCookies(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	var budget models.Budget
+	var cookie string
+	cookie = r.URL.Query().Get("cookie")
+	fmt.Println(cookie)
+
+	err := validate.Struct(cookie)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		userSession, exists := sessions[cookie]
+		if !exists {
+			// If the session token is not present in session map, return an unauthorized error
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if userSession.isExpired() {
+			delete(sessions, cookie)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		fmt.Println("userSession.username", userSession.username)
+
+		budget.User_id = userSession.username
+		budget.ID = primitive.NewObjectID()
+		budget.Created_at = time.Now()
+		budget.Updated_at = time.Now()
+		budget.Budget_id = budget.ID.Hex()
+
+	_, err = budgetCollection.InsertOne(context.TODO(), budget)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Set-Cookie", cookie)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
+
+	fmt.Println("budget created")
+
+} 
+}
+
+
+
+	
+	
 
 func addExpense(w http.ResponseWriter, r *http.Request) {
 	
@@ -1011,3 +1065,46 @@ func totalMaxAndTotalAmountByUserId(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]float64{"total_max": totalMax, "total_amount": totalAmount})
 	fmt.Println("total max and total amount retrieved")
 }
+
+func MyProfileByCookie(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	var user models.User
+
+	var cookie string
+	cookie = r.URL.Query().Get("cookie")
+	fmt.Println(cookie)
+
+	err := validate.Struct(cookie)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		userSession, exists := sessions[cookie]
+		if !exists {
+			// If the session token is not present in session map, return an unauthorized error
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if userSession.isExpired() {
+			delete(sessions, cookie)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		err := userCollection.FindOne(context.TODO(), bson.M{"username": userSession.username}).Decode(&user)
+
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		} else {
+			fmt.Println("user retrieved")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(user)
+		}
+	}
+}
+
+
