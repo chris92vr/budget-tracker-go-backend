@@ -90,7 +90,7 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	return true
 }
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
     (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
     (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
@@ -391,6 +391,8 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 	budget.Created_at = time.Now()
 	budget.Updated_at = time.Now()
 	budget.Budget_id = budget.ID.Hex()
+	
+	
 
 	_, err = budgetCollection.InsertOne(context.TODO(), budget)
 	if err != nil {
@@ -399,6 +401,7 @@ func addBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Set-Cookie", sessionToken)
+	fmt.Println("cookie set in the session is", r.Cookies())
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"budgetID": budget.ID.Hex()})
 
